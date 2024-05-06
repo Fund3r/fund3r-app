@@ -1,20 +1,62 @@
 import type { AppProps } from "next/app";
-import { ThirdwebProvider } from "@thirdweb-dev/react";
+import { ThirdwebProvider, coinbaseWallet, embeddedWallet, inAppWallet, localWallet, metamaskWallet, smartWallet, walletConnect } from "@thirdweb-dev/react";
+import { ChakraProvider, background, extendTheme } from "@chakra-ui/react";
+import { Navbar } from "../components/Navbar";
 import "../styles/globals.css";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// This is the chain your dApp will work on.
-// Change this to the chain your app is built for.
-// You can also import additional chains from `@thirdweb-dev/chains` and pass them directly.
 const activeChain = "ethereum";
+const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID as string;
+const theme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        background: '#070707',
+        color: '#e7e8e8',
+        fontFamily: 'Inter, sans-serif',
+      }
+    }
+  }
+})
+
+const reactQueryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const smartWalletConfig = {
+    factoryAddress: "",
+    gasless: true,
+  }
   return (
-    <ThirdwebProvider
-      clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
-      activeChain={activeChain}
-    >
-      <Component {...pageProps} />
-    </ThirdwebProvider>
+    <QueryClientProvider client={reactQueryClient}>
+      <ThirdwebProvider
+        clientId={CLIENT_ID}
+        activeChain={activeChain}
+        supportedWallets={[
+          // smartWallet(metamaskWallet(), smartWalletConfig())
+          // embeddedWallet(),
+          metamaskWallet(),
+          coinbaseWallet(),
+          walletConnect(),
+          localWallet(),
+          inAppWallet({
+            auth: {
+              options: ["email", "google"],
+            },
+          }),
+        ]}
+      >
+        <ChakraProvider theme={theme}>
+          <Navbar />
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </ThirdwebProvider>
+    </QueryClientProvider>
   );
 }
 
