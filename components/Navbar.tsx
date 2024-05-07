@@ -69,12 +69,6 @@ export function Navbar() {
                 </Link>
 
                 <Flex direction={"row"}>
-                    {/* <Link as={NextLink} href="/buy" mx={2.5}>
-                        <Text>Buy</Text>
-                    </Link>
-                    <Link as={NextLink} href="/sell" mx={2.5}>
-                        <Text>Sell</Text>
-                    </Link> */}
                     <Link as={NextLink} href="/explorer" mx={2.5}>
                         <Text>Explorer</Text>
                     </Link>
